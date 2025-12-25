@@ -22,7 +22,7 @@ cleaned_data <- raw_data %>%
     
     # IDs for Location & Classification
     kid2019,                  # District ID (needed for Fixed Effects)
-    gid2019,                  # Municipality ID (needed to calc Urban/Rural)
+    gid2019,                  # Municipality ID (needed to classify Urban/Rural)
     
     # Controls: Characteristics
     wohnflaeche,              # Living Space
