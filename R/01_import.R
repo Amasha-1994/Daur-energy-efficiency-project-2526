@@ -1,75 +1,88 @@
 # 01_import.R
-# Purpose: Load data, select V2 variables, and classify Urban vs. Rural
-# Authors: Group 1 (Ahmed & Begüm)
+# Purpose: Import raw data, select V2 variables, and classify regions as Urban vs Rural
+# Authors: Group 1 (Ahmed Amasha & Begüm Akyüz)
 
+# -------------------------------------------------------------------
+# 0. Load libraries
+# -------------------------------------------------------------------
 library(tidyverse)
 library(readr)
 
-# 1. Smart Import ---------------------------------------------------------
-# Load raw data and fix "Not specified" immediately
+# -------------------------------------------------------------------
+# 1. Import raw data
+# -------------------------------------------------------------------
 raw_data <- read_csv(
   "data/CampusFile_WM_2022.csv",
   na = c("", "NA", "Not specified"),
   show_col_types = FALSE
-) 
+)
 
-# 2. Tidy, Transform & Classify -------------------------------------------
+# -------------------------------------------------------------------
+# 2. Data cleaning and variable construction
+# -------------------------------------------------------------------
 cleaned_data <- raw_data %>%
-  # A. Select ONLY the columns for the V2 Outline
+  
+  # A. Select only variables required for the V2 outline
   select(
-    rent_sqm,                 # Outcome
-    energieeffizienzklasse,   # Interest Variable
+    rent_sqm,                 # Rent per square meter (€/m²) – dependent variable
+    energieeffizienzklasse,   # Energy efficiency class (A+ to H)
     
-    # IDs for Location & Classification
-    kid2019,                  # District ID (needed for Fixed Effects)
-    gid2019,                  # Municipality ID (needed to classify Urban/Rural)
+    # Location identifiers
+    kid2019,                  # District ID (Kreiskennung, fixed effects)
+    gid2019,                  # Municipality ID (Gemeindekennung)
     
-    # Controls: Characteristics
-    wohnflaeche,              # Living Space
-    zimmeranzahl,             # Rooms
-    baujahr,                  # Construction Year
-    letzte_modernisierung,    # Modernization
+    # Structural characteristics
+    wohnflaeche,              # Living area (m²)
+    zimmeranzahl,             # Number of rooms
+    baujahr,                  # Year of construction
+    letzte_modernisierung,    # Year of last modernization
     
-    # Controls: Amenities
+    # Amenities (binary indicators)
     balkon,                   # Balcony
     aufzug,                   # Elevator
-    einbaukueche,             # Kitchen
-    parkplatz,                # Parking
-    keller,                   # Basement
-    gaestewc,                 # Guest WC
+    einbaukueche,             # Fitted kitchen
+    parkplatz,                # Parking space
+    keller,                   # Basement / cellar
+    gaestewc,                 # Guest toilet
     garten                    # Garden
   ) %>%
   
-  # [cite_start]B. Create "Urban" vs "Rural" (The Math Trick) [cite: 31, 32]
-  # Logic: If a District (kid) contains many Municipalities (gid), it is Rural.
-  #        If a District contains only 1 Municipality, it is an Independent City.
+  # B. Urban vs Rural classification
+  #    German administrative context:
+  #    - Districts with only one municipality are typically
+  #      "kreisfreie Städte" (independent cities → urban)
+  #    - Districts with multiple municipalities are classified as rural
   group_by(kid2019) %>%
   mutate(
     municipality_count = n_distinct(gid2019),
     region_type = if_else(municipality_count == 1, "urban", "rural")
   ) %>%
-  ungroup() %>% # Always ungroup after calculations!
+  ungroup() %>%
   
-  # C. Create Log-Rent 
+  # C. Log transformation of rent per square meter
   mutate(
     log_rent_sqm = log(rent_sqm)
   ) %>%
   
-  # D. Filter Invalid Data
+  # D. Remove invalid or unusable observations
   filter(
-    rent_sqm > 0, 
+    rent_sqm > 0,
     !is.na(energieeffizienzklasse)
   )
 
-# 3. Save Processed Data --------------------------------------------------
+# -------------------------------------------------------------------
+# 3. Save cleaned dataset
+# -------------------------------------------------------------------
 saveRDS(cleaned_data, "data/cleaned_data.rds")
 
-# 4. Verification ---------------------------------------------------------
-print("Success! Data updated.")
+# -------------------------------------------------------------------
+# 4. Basic verification checks
+# -------------------------------------------------------------------
+message("Data cleaning finished successfully.")
 
-# Check the new Urban/Rural split
-print("Urban vs. Rural Count:")
+# Urban vs Rural distribution
 table(cleaned_data$region_type)
 
-# Check the columns to make sure amenities are there
+# Quick sanity checks
+summary(cleaned_data$rent_sqm)
 glimpse(cleaned_data)
