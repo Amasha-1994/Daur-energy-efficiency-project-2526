@@ -1,41 +1,55 @@
 # 02_descriptive.R
+# Purpose: Generate Descriptive Statistics Table (Urban vs. Rural)
+# Authors: Group 1 (Ahmed Amasha & Begüm Akyüz)
 
-
-write.csv(readRDS("data/cleaned_data.rds"), "data/cleaned_data.csv", row.names = FALSE)
-
+# -------------------------------------------------------------------
+# 0. Setup and Libraries
+# -------------------------------------------------------------------
 rm(list = ls())
-
-library(dplyr)
+library(tidyverse)
 library(readr)
 
 # Create output folder if it does not exist
 if (!dir.exists("output")) dir.create("output", recursive = TRUE)
 
-# Load cleaned data
+# -------------------------------------------------------------------
+# 1. Load Data
+# -------------------------------------------------------------------
+# Load the cleaned dataset created in 01_import.R
 df <- readRDS("data/cleaned_data.rds")
 
-# --- SAFETY CHECKS ---
+# Optional: Save a CSV copy for manual inspection
+write_csv(df, "data/cleaned_data.csv")
+
+# Safety Check: Ensure critical variables exist before analysis
 stopifnot(
   "region_type" %in% names(df),
   "rent_sqm" %in% names(df),
   "wohnflaeche" %in% names(df)
 )
 
-# Assign energieeffizienzklasse to obj
-energy_col <- "energieeffizienzklasse"   
-
-# Create energy-efficient indicator
+# -------------------------------------------------------------------
+# 2. Variable Construction (Analysis Specific)
+# -------------------------------------------------------------------
+# Define energy efficiency indicator
+# We classify "APLUS", "A", and "B" as energy efficient (Green).
+# "C" through "H" are classified as standard/inefficient.
 df <- df %>%
   mutate(
-    energy_class_std = toupper(trimws(as.character(.data[[energy_col]]))),
+    # Clean text to uppercase just in case
+    energy_class_std = toupper(trimws(as.character(energieeffizienzklasse))),
+    
+    # Create Binary Indicator (1 = Efficient, 0 = Not Efficient)
     energy_efficient = if_else(
-      energy_class_std %in% c("A+", "A", "B"),
-      1L,
+      energy_class_std %in% c("APLUS", "A", "B"), 
+      1L, 
       0L
     )
   )
 
-# Urban vs Rural summary table
+# -------------------------------------------------------------------
+# 3. Generate Summary Table (Urban vs Rural)
+# -------------------------------------------------------------------
 summary_urban_rural <- df %>%
   group_by(region_type) %>%
   summarise(
@@ -46,9 +60,11 @@ summary_urban_rural <- df %>%
     .groups = "drop"
   )
 
-# Save outputs
+# -------------------------------------------------------------------
+# 4. Save and Print Results
+# -------------------------------------------------------------------
 write_csv(summary_urban_rural, "output/summary_urban_rural.csv")
 saveRDS(summary_urban_rural, "output/summary_urban_rural.rds")
 
-# Print to console
+# Print to console for immediate verification
 print(summary_urban_rural)
