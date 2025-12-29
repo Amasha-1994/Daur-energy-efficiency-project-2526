@@ -1,3 +1,3 @@
-region_type,n_obs,avg_rent_sqm,avg_wohnflaeche,share_energy_efficient
-rural,12692,9.51098592684368,72.05616922242358,0.3194138039710054
-urban,13792,10.045367365218967,66.28652188551334,0.2783497679814385
+region_type,n_obs,avg_rent_sqm,avg_wohnflaeche,share_energy_efficient_pct
+rural,12692,9.51,72.1,31.9
+urban,13792,10.05,66.3,27.8
