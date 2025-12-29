@@ -7,66 +7,51 @@
 # -------------------------------------------------------------------
 library(tidyverse)
 library(readr)
+
 # -------------------------------------------------------------------
 # 1. Import raw data
 # -------------------------------------------------------------------
 raw_data <- readr::read_csv(
   "data/CampusFile_WM_2022.csv",
   na = c("", "NA", "Not specified"),
-  locale = readr::locale(decimal_mark = ".", grouping_mark = ""),
+  # standardizing decimal format to avoid import issues
+  locale = readr::locale(decimal_mark = ".", grouping_mark = ""), 
   show_col_types = FALSE
 )
-
 
 # -------------------------------------------------------------------
 # 2. Data cleaning and variable construction
 # -------------------------------------------------------------------
 cleaned_data <- raw_data %>%
   
-  # A. Select only variables required for the V2 outline
+  # A. Select variables required for the V2 outline
   select(
-    rent_sqm,
-    # Rent per square meter (€/m²) – dependent variable
-    energieeffizienzklasse,
-    # Energy efficiency class (A+ to H)
+    rent_sqm,                 # Rent per square meter (€/m²) – Dependent variable
+    energieeffizienzklasse,   # Energy efficiency class (A+ to H)
     
     # Location identifiers
-    kid2019,
-    # District ID (Kreiskennung, fixed effects)
-    gid2019,
-    # Municipality ID (Gemeindekennung)
+    kid2019,                  # District ID (Fixed Effects)
+    gid2019,                  # Municipality ID
     
     # Structural characteristics
-    wohnflaeche,
-    # Living area (m²)
-    zimmeranzahl,
-    # Number of rooms
-    baujahr,
-    # Year of construction
-    letzte_modernisierung,
-    # Year of last modernization
+    wohnflaeche,              # Living area (m²)
+    zimmeranzahl,             # Number of rooms
+    baujahr,                  # Year of construction
+    letzte_modernisierung,    # Year of last modernization
     
     # Amenities (binary indicators)
-    balkon,
-    # Balcony
-    aufzug,
-    # Elevator
-    einbaukueche,
-    # Fitted kitchen
-    parkplatz,
-    # Parking space
-    keller,
-    # Basement / cellar
-    gaestewc,
-    # Guest toilet
+    balkon,                   # Balcony
+    aufzug,                   # Elevator
+    einbaukueche,             # Fitted kitchen
+    parkplatz,                # Parking space
+    keller,                   # Basement / cellar
+    gaestewc,                 # Guest toilet
     garten                    # Garden
   ) %>%
   
   # B. Urban vs Rural classification
-  #    German administrative context:
-  #    - Districts with only one municipality are typically
-  #      "kreisfreie Städte" (independent cities → urban)
-  #    - Districts with multiple municipalities are classified as rural
+  #    Logic: Single-municipality districts are urban (Kreisfreie Städte),
+  #    multi-municipality districts are rural (Landkreise).
   group_by(kid2019) %>%
   mutate(
     municipality_count = n_distinct(gid2019),
@@ -74,11 +59,19 @@ cleaned_data <- raw_data %>%
   ) %>%
   ungroup() %>%
   
-  # C. Log transformation of rent per square meter
-  mutate(log_rent_sqm = log(rent_sqm)) %>%
+  # C. Set Baseline for Energy Efficiency
+  #    Setting "C" as the reference category for the regression model.
+  mutate(
+    energieeffizienzklasse = as.factor(energieeffizienzklasse),
+    energieeffizienzklasse = relevel(energieeffizienzklasse, ref = "C")
+  ) %>%
   
-  # D. Remove invalid or unusable observations
-  filter(rent_sqm > 0, !is.na(energieeffizienzklasse))
+  # D. Log transformation & Filtering
+  mutate(log_rent_sqm = log(rent_sqm)) %>%
+  filter(
+    rent_sqm > 0, 
+    !is.na(energieeffizienzklasse)
+  )
 
 # -------------------------------------------------------------------
 # 3. Save cleaned dataset
@@ -90,9 +83,8 @@ saveRDS(cleaned_data, "data/cleaned_data.rds")
 # -------------------------------------------------------------------
 message("Data cleaning finished successfully.")
 
-# Urban vs Rural distribution
+# Check Urban vs Rural distribution
 table(cleaned_data$region_type)
 
-# Quick sanity checks
-summary(cleaned_data$rent_sqm)
-glimpse(cleaned_data)
+# Verify factor levels (first level indicates baseline)
+print(levels(cleaned_data$energieeffizienzklasse))
