@@ -1,5 +1,5 @@
 # 01_import.R
-# Purpose: Import raw data, select V2 variables, and classify regions as Urban vs Rural
+# Purpose: Import raw data, select relevant variables and classify regions as urban vs rural
 # Authors: Group 1 (Ahmed Amasha & Begüm Akyüz)
 
 # -------------------------------------------------------------------
@@ -24,7 +24,7 @@ raw_data <- readr::read_csv(
 # -------------------------------------------------------------------
 cleaned_data <- raw_data %>%
   
-  # A. Select variables required for the V2 outline
+  # A. Select relevant variables
   select(
     rent_sqm,                 # Rent per square meter (€/m²) – Dependent variable
     energieeffizienzklasse,   # Energy efficiency class (A+ to H)
@@ -83,8 +83,19 @@ saveRDS(cleaned_data, "data/cleaned_data.rds")
 # -------------------------------------------------------------------
 message("Data cleaning finished successfully.")
 
-# Check Urban vs Rural distribution
-table(cleaned_data$region_type)
+# Check 1: Urban vs Rural distribution
+print("Region Distribution:")
+print(table(cleaned_data$region_type))
 
-# Verify factor levels (first level indicates baseline)
+# Check 2: Verify 'C' is the first level (Baseline)
+# The first item listed below is your regression reference category.
+print("Energy Levels:")
 print(levels(cleaned_data$energieeffizienzklasse))
+
+# Check 3: Structural Overview
+# Confirms correct variable types and rent distribution (sanity check)
+print("Rent Summary:")
+print(summary(cleaned_data$rent_sqm))
+
+print("Data Structure:")
+glimpse(cleaned_data)
