@@ -1,0 +1,290 @@
+% Options for packages loaded elsewhere
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+  ignorenonframetext,
+]{beamer}
+\newif\ifbibliography
+\usepackage{pgfpages}
+\setbeamertemplate{caption}[numbered]
+\setbeamertemplate{caption label separator}{: }
+\setbeamercolor{caption name}{fg=normal text.fg}
+\beamertemplatenavigationsymbolsempty
+% remove section numbering
+\setbeamertemplate{part page}{
+  \centering
+  \begin{beamercolorbox}[sep=16pt,center]{part title}
+    \usebeamerfont{part title}\insertpart\par
+  \end{beamercolorbox}
+}
+\setbeamertemplate{section page}{
+  \centering
+  \begin{beamercolorbox}[sep=12pt,center]{section title}
+    \usebeamerfont{section title}\insertsection\par
+  \end{beamercolorbox}
+}
+\setbeamertemplate{subsection page}{
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center]{subsection title}
+    \usebeamerfont{subsection title}\insertsubsection\par
+  \end{beamercolorbox}
+}
+% Prevent slide breaks in the middle of a paragraph
+\widowpenalties 1 10000
+\raggedbottom
+\AtBeginPart{
+  \frame{\partpage}
+}
+\AtBeginSection{
+  \ifbibliography
+  \else
+    \frame{\sectionpage}
+  \fi
+}
+\AtBeginSubsection{
+  \frame{\subsectionpage}
+}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+
+\usetheme[]{Frankfurt}
+\usecolortheme[]{seahorse}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+
+
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+\usepackage{caption}
+% Make caption package work with longtable
+\makeatletter
+\def\fnum@table{\tablename~\thetable}
+\makeatother
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+
+
+
+
+
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+
+
+ 
+
+
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\AtBeginDocument{%
+\ifdefined\contentsname
+  \renewcommand*\contentsname{Table of contents}
+\else
+  \newcommand\contentsname{Table of contents}
+\fi
+\ifdefined\listfigurename
+  \renewcommand*\listfigurename{List of Figures}
+\else
+  \newcommand\listfigurename{List of Figures}
+\fi
+\ifdefined\listtablename
+  \renewcommand*\listtablename{List of Tables}
+\else
+  \newcommand\listtablename{List of Tables}
+\fi
+\ifdefined\figurename
+  \renewcommand*\figurename{Figure}
+\else
+  \newcommand\figurename{Figure}
+\fi
+\ifdefined\tablename
+  \renewcommand*\tablename{Table}
+\else
+  \newcommand\tablename{Table}
+\fi
+}
+\@ifpackageloaded{float}{}{\usepackage{float}}
+\floatstyle{ruled}
+\@ifundefined{c@chapter}{\newfloat{codelisting}{h}{lop}}{\newfloat{codelisting}{h}{lop}[chapter]}
+\floatname{codelisting}{Listing}
+\newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
+\makeatother
+\makeatletter
+\makeatother
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
+\makeatother
+
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={The Green Premium in German Housing},
+  pdfauthor={Group 1: Ahmed Amasha \& Begüm Akyüz},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+
+\title{The Green Premium in German Housing}
+\subtitle{Econometric Analysis of Energy Efficiency}
+\author{Group 1: Ahmed Amasha \& Begüm Akyüz}
+\date{}
+
+\begin{document}
+\frame{\titlepage}
+
+
+\begin{frame}
+\#\textbar{} label: setup \#\textbar{} include: false library(knitr)
+\end{frame}
+
+\begin{frame}{Research Question}
+\phantomsection\label{research-question}
+\textbf{Does energy efficiency affect rental prices?}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Motivation:} Increasing energy costs and climate regulations.
+\item
+  \textbf{Hypothesis:} Efficient apartments (A+, A, B) command a price
+  premium (``Green Premium'').
+\item
+  \textbf{Method:} Hedonic regression on ImmoScout24 data.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Descriptive Evidence}
+\phantomsection\label{descriptive-evidence}
+\begin{figure}[H]
+
+{\centering \includegraphics[width=0.9\linewidth,height=\textheight,keepaspectratio]{output/figures/png/fig01_boxplot_raw.png}
+
+}
+
+\caption{Rent Distribution by Energy Class}
+
+\end{figure}%
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Observation:} Rent tends to be higher for efficient classes
+  (A+/A).
+\item
+  \textbf{Caveat:} Raw data does not control for location or size.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{The Green Premium (Results)}
+\phantomsection\label{the-green-premium-results}
+\begin{figure}[H]
+
+{\centering \includegraphics[width=0.9\linewidth,height=\textheight,keepaspectratio]{output/figures/png/fig02_green_premium.png}
+
+}
+
+\caption{Regression Coefficients}
+
+\end{figure}%
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Result:} Significant premium for Classes A+, A, and B relative
+  to Class C.
+\item
+  \textbf{Discount:} Inefficient classes (F, G, H) trade at a discount.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Urban vs.~Rural Markets}
+\phantomsection\label{urban-vs.-rural-markets}
+\begin{figure}[H]
+
+{\centering \includegraphics[width=0.9\linewidth,height=\textheight,keepaspectratio]{output/figures/png/fig03_interaction_effect.png}
+
+}
+
+\caption{Interaction Effects}
+
+\end{figure}%
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Urban (Red):} Steep premium for efficiency.
+\item
+  \textbf{Rural (Green):} Flatter curve; efficiency matters less.
+\item
+  \textbf{Conclusion:} The ``Green Premium'' is stronger in cities.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Conclusion}
+\phantomsection\label{conclusion}
+\begin{enumerate}
+\tightlist
+\item
+  \textbf{Energy Efficiency Matters:} It is capitalized into rental
+  prices.
+\item
+  \textbf{Market Heterogeneity:} The effect is driven largely by urban
+  markets.
+\item
+  \textbf{Policy Implication:} Decarbonization incentives work
+  differently in cities vs.~countryside.
+\end{enumerate}
+
+\textbf{Thank You!}
+\end{frame}
+
+
+
+
+\end{document}

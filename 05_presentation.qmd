@@ -1,0 +1,54 @@
+---
+title: "The Green Premium in German Housing"
+subtitle: "Econometric Analysis of Energy Efficiency"
+author: "Group 1: Ahmed Amasha & Begüm Akyüz"
+format: 
+  beamer:
+    theme: Frankfurt
+    colortheme: seahorse
+    slide-level: 2
+editor: source
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(knitr)
+
+## Research Question
+
+**Does energy efficiency affect rental prices?**
+
+-   **Motivation:** Increasing energy costs and climate regulations.
+-   **Hypothesis:** Efficient apartments (A+, A, B) command a price premium ("Green Premium").
+-   **Method:** Hedonic regression on ImmoScout24 data.
+
+## Descriptive Evidence
+
+![Rent Distribution by Energy Class](output/figures/png/fig01_boxplot_raw.png){width=90%}
+
+-   **Observation:** Rent tends to be higher for efficient classes (A+/A).
+-   **Caveat:** Raw data does not control for location or size.
+
+## The Green Premium (Results)
+
+![Regression Coefficients](output/figures/png/fig02_green_premium.png){width=90%}
+
+-   **Result:** Significant premium for Classes A+, A, and B relative to Class C.
+-   **Discount:** Inefficient classes (F, G, H) trade at a discount.
+
+## Urban vs. Rural Markets
+
+![Interaction Effects](output/figures/png/fig03_interaction_effect.png){width=90%}
+
+-   **Urban (Red):** Steep premium for efficiency.
+-   **Rural (Green):** Flatter curve; efficiency matters less.
+-   **Conclusion:** The "Green Premium" is stronger in cities.
+
+## Conclusion
+
+1.  **Energy Efficiency Matters:** It is capitalized into rental prices.
+2.  **Market Heterogeneity:** The effect is driven largely by urban markets.
+3.  **Policy Implication:** Decarbonization incentives work differently in cities vs. countryside.
+
+**Thank You!**
