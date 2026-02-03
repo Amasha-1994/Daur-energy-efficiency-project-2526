@@ -136,13 +136,14 @@ kbl(
 
 ## Descriptive Statistics II
  - Before controls, we see a clear correlation: More efficient energy classes are associated with higher rents.
-![Rent Distribution by Energy Class](output/figures/png/fig01_boxplot_raw.png){width=85%}
+![Rent Distribution by Energy Class](output/figures/pdf/fig01_boxplot_raw.pdf){width=85%}
 
 ## Regression Results
 After controlling for confounders, the premium remains significant.
 * **A+ / A:** Significant premium (Tenants pay ~15-20% more).
 * **F / G / H:** Significant discount (Tenants pay less).
-![Estimated Green Premium (Relative to Class C)](output/figures/png/fig02_green_premium.png){width=85%}
+
+![Estimated Green Premium (Relative to Class C)](output/figures/pdf/fig02_green_premium.pdf){width=85%}
 
 ## Market Results
 Does the market tightness matter?
@@ -150,7 +151,7 @@ Does the market tightness matter?
 * **Urban (Red):** Steep gradient. High willingness to pay for efficiency.
 * **Rural (Green):** Flat gradient. Efficiency has little impact on price.
 
-![Interaction Effect: Urban vs. Rural](output/figures/png/fig03_interaction_effect.png){width=85%}
+![Interaction Effect: Urban vs. Rural](output/figures/pdf/fig03_interaction_effect.pdf){width=85%}
 
 # Discussion & Limitations 
 
