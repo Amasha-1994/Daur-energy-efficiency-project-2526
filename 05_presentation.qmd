@@ -2,53 +2,198 @@
 title: "The Green Premium in German Housing"
 subtitle: "Econometric Analysis of Energy Efficiency"
 author: "Group 1: Ahmed Amasha & Begüm Akyüz"
+date: today
 format: 
   beamer:
     theme: Frankfurt
     colortheme: seahorse
     slide-level: 2
+    toc: true
 editor: source
 ---
 
-```{r}
-#| label: setup
+```{r setup}
 #| include: false
-library(knitr)
+#| warning: false
+#| message: false
+library(tidyverse)
+library(kableExtra)
+library(modelsummary)
+
+# Load the summary table created in Step 02
+summary_stats <- readRDS("output/summary_urban_rural.rds")
+```
+
+
+# Introduction
 
 ## Research Question
 
-**Does energy efficiency affect rental prices?**
+**How is energy efficiency reflected in advertised rental prices for apartments in Germany?**
 
--   **Motivation:** Increasing energy costs and climate regulations.
--   **Hypothesis:** Efficient apartments (A+, A, B) command a price premium ("Green Premium").
--   **Method:** Hedonic regression on ImmoScout24 data.
+- Do tenants pay a premium for energy-efficient apartments?
+- Does this relationship differ between urban (tight) and rural (loose) rental markets?
 
-## Descriptive Evidence
+## Motivation & Context
 
-![Rent Distribution by Energy Class](output/figures/png/fig01_boxplot_raw.png){width=90%}
+- **Rising energy costs:**  
+  In 2022, energy prices increased by **34.7%** (Destatis, 2023), making heating costs a key concern for tenants.
 
--   **Observation:** Rent tends to be higher for efficient classes (A+/A).
--   **Caveat:** Raw data does not control for location or size.
+- **Market transparency:**  
+  Since **2014**, Energy Performance Certificates (EPCs) are mandatory in housing advertisements (BMWi, 2014).
 
-## The Green Premium (Results)
+- **Related literature:**  
+  - Energy efficiency is capitalized into housing prices in owner-occupied markets (Taruttis & Weber, 2022).  
+  - Evidence for the **rental market**, especially regarding **urban–rural differences**, remains limited.
 
-![Regression Coefficients](output/figures/png/fig02_green_premium.png){width=90%}
 
--   **Result:** Significant premium for Classes A+, A, and B relative to Class C.
--   **Discount:** Inefficient classes (F, G, H) trade at a discount.
+# Data
 
-## Urban vs. Rural Markets
+## Data Source & Sample
 
-![Interaction Effects](output/figures/png/fig03_interaction_effect.png){width=90%}
+- **Data source:**  
+  ImmoScout24 (RWI Real Estate Data – Campus File, 2022)
 
--   **Urban (Red):** Steep premium for efficiency.
--   **Rural (Green):** Flatter curve; efficiency matters less.
--   **Conclusion:** The "Green Premium" is stronger in cities.
+- **Unit of observation:**  
+  Individual rental apartment listings
 
-## Conclusion
+- **Sample construction:**  
+  - Cross-sectional dataset  
+  - Exclusion of outliers (rent and size)  
+  - Removal of observations with missing energy information
 
-1.  **Energy Efficiency Matters:** It is capitalized into rental prices.
-2.  **Market Heterogeneity:** The effect is driven largely by urban markets.
-3.  **Policy Implication:** Decarbonization incentives work differently in cities vs. countryside.
+## Variables
 
-**Thank You!**
+- **Outcome variable:**  
+  Advertised net cold rent per m²  
+  $\ln(\text{Rent})$
+
+- **Main explanatory variable:**  
+  Energy efficiency class (A+ to H)  
+  Reference category: **Class C**
+
+- **Control variables:**  
+  - Apartment characteristics: size (m²), rooms, building age  
+  - Amenities: balcony, elevator, fitted kitchen, parking, garden
+  
+## Market Classification
+
+- **Urban markets:**  
+  Single-municipality districts (*kreisfreie Städte*)
+
+- **Rural markets:**  
+  Multi-municipality districts (*Landkreise*)
+  
+##Descriptive Statistics (Urban vs. Rural)
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+kbl(
+  summary_stats,
+  col.names = c("Region", "Obs", "Avg Rent (€/sqm)", "Avg Size (sqm)", "Efficient (%)"),
+  booktabs = TRUE,
+  caption = "Summary Statistics by Region"
+) %>%
+  kable_styling(font_size = 7, latex_options = "hold_position")
+```
+
+## Key Observations
+
+- **Rental prices:**  
+  Urban rents are higher on average (€10.0 vs. €9.5 per m²).
+
+- **Energy efficiency:**  
+  Rural markets exhibit a higher share of energy-efficient apartments (31.9% vs. 27.8%), likely reflecting newer building stock.
+
+
+# Methodology
+
+## Identification Strategy
+
+### Conceptual Framework
+- Apartment rents are determined by structural characteristics, amenities, and location.
+- Energy efficiency is treated as a **quality attribute** valued by tenants.
+
+### Key Assumption
+- Conditional on observable characteristics (size, age, amenities, and location), remaining rent differences are associated with energy efficiency.
+
+### Estimation
+- Ordinary Least Squares (OLS)
+- Robust standard errors clustered at the district level
+
+## Econometric Model
+
+We estimate the green premium using a hedonic rent regression:
+
+$$
+\ln(\text{Rent}_i) = \alpha + \beta \, \text{EnergyClass}_i + \gamma \mathbf{X}_i + \delta_d + \varepsilon_i
+$$
+## Model Components
+
+- $\ln(\text{Rent}_i)$: Log rent per square meter  
+- $\text{EnergyClass}_i$: Energy efficiency class dummies (A+ to H), reference category **C**  
+- $\mathbf{X}_i$: Apartment characteristics and amenities (age, balcony, elevator, etc.)  
+- $\delta_d$: District fixed effects (controlling for local price levels)
+
+# Results
+
+## Descriptive Evidence (Raw Data)
+
+Before controls, we see a clear correlation: Better energy classes are associated with higher rents.
+
+![Rent Distribution by Energy Class](output/figures/png/fig01_boxplot_raw.png){width=85%}
+
+## The Green Premium (Regression Results)
+
+After controlling for confounders, the premium remains significant.
+
+* **A+ / A:** Significant premium (Tenants pay ~15-20% more).
+* **F / G / H:** Significant discount (Tenants pay less).
+
+![Estimated Green Premium (Relative to Class C)](output/figures/png/fig02_green_premium.png){width=85%}
+
+## Heterogeneity: Urban vs. Rural
+
+Does the market tightness matter?
+
+* **Urban (Red):** Steep gradient. High willingness to pay for efficiency.
+* **Rural (Green):** Flat gradient. Efficiency has little impact on price.
+
+![Interaction Effect: Urban vs. Rural](output/figures/png/fig03_interaction_effect.png){width=85%}
+
+# Discussion & Conclusion
+
+## Limitations
+- **Cross-Sectional Data:**  
+  - We observe a snapshot in time.  
+  - We cannot observe rent changes for the same apartment (no causal interpretation).  
+
+- **Omitted Variable Bias:**  
+  - Unobserved quality (e.g., "luxury" status) might correlate with energy efficiency.  
+
+- **Offer vs. Transaction:**  
+  - We analyze advertised rents, not final signed contracts.  
+
+## Key Findings & Policy Implications
+- **The Green Premium is Real:**  
+  - Energy efficiency is capitalized into rental prices.  
+
+- **Market Heterogeneity:**  
+  - The effect is largely driven by Urban markets.  
+
+- **Policy Implications:**  
+  - **Urban:** Market forces naturally reward decarbonization.  
+  - **Rural:** The market signal is weak. Government subsidies are critical to incentivize renovations.  
+
+## Thank You!
+- Questions?
+
+# Group 1: Ahmed Amasha & Begüm Akyüz
+
+
+**Group 1:**  
+Ahmed Amasha & Begüm Akyüz
+
