@@ -1,5 +1,5 @@
 ---
-title: "The Green Premium in German Housing"
+title: "Energy Efficiency and Rental Prices in the German Housing Market"
 subtitle: "Econometric Analysis of Energy Efficiency"
 author: "Group 1: Ahmed Amasha & Begüm Akyüz"
 date: today
@@ -27,65 +27,99 @@ summary_stats <- readRDS("output/summary_urban_rural.rds")
 
 # Introduction
 
+## Motivation & Context I
+
+- Energy efficiency has become a key issue in housing markets due to rising energy prices, environmental concerns, and regulation.
+- Energy prices increased by **34.7%** in 2022, making heating costs highly relevant for tenants (Destatis, 2023).
+- Since **2014**, mandatory Energy Performance Certificates (EPCs) have made energy efficiency transparent and comparable across apartments (BMWi, 2014).
+- Previous studies show that energy efficiency is capitalized into single-family house prices in Germany (Taruttis & Weber, 2022).
+
+## Motivation & Context II
+
+- This effect varies across housing markets, with weaker capitalization in tight urban markets and stronger effects in rural regions.
+- Evidence for rental apartments, especially regarding urban–rural differences, remains limited.
+- This study examines how energy efficiency is reflected in advertised rents across urban and rural rental markets.
+
 ## Research Question
 
-**How is energy efficiency reflected in advertised rental prices for apartments in Germany?**
-
-- Do tenants pay a premium for energy-efficient apartments?
-- Does this relationship differ between urban (tight) and rural (loose) rental markets?
-
-## Motivation & Context
-
-- **Rising energy costs:**  
-  In 2022, energy prices increased by **34.7%** (Destatis, 2023), making heating costs a key concern for tenants.
-
-- **Market transparency:**  
-  Since **2014**, Energy Performance Certificates (EPCs) are mandatory in housing advertisements (BMWi, 2014).
-
-- **Related literature:**  
-  - Energy efficiency is capitalized into housing prices in owner-occupied markets (Taruttis & Weber, 2022).  
-  - Evidence for the **rental market**, especially regarding **urban–rural differences**, remains limited.
-
+- How is energy efficiency reflected in advertised rent per square meter for rental apartments in Germany?
+- Does the relationship between energy efficiency and rent differ between urban (tight) and rural (loose) rental markets?
 
 # Data
 
 ## Data Source & Sample
 
 - **Data source:**  
-  ImmoScout24 (RWI Real Estate Data – Campus File, 2022)
+  ImmobilienScout24 housing advertisements
+
+- **Dataset:**  
+  CampusFile_WM_2022 (cross-sectional)
 
 - **Unit of observation:**  
   Individual rental apartment listings
 
-- **Sample construction:**  
-  - Cross-sectional dataset  
-  - Exclusion of outliers (rent and size)  
-  - Removal of observations with missing energy information
+- **Sample:**  
+  Rental apartments with valid information on advertised rent per square meter, energy efficiency, and relevant apartment characteristics
 
-## Variables
+## Key Variables
 
-- **Outcome variable:**  
-  Advertised net cold rent per m²  
-  $\ln(\text{Rent})$
+- **Outcome variable (dependent variable):**  
+  - Advertised rent per m²
 
-- **Main explanatory variable:**  
-  Energy efficiency class (A+ to H)  
-  Reference category: **Class C**
+- **Explanatory variable of interest (independent variable):**  
+  - Energy efficiency class (A+, A, B, C, D, E, F, G, H)  
+  - Reference category: **Class C**
 
-- **Control variables:**  
-  - Apartment characteristics: size (m²), rooms, building age  
-  - Amenities: balcony, elevator, fitted kitchen, parking, garden
-  
-## Market Classification
+- **Control variables (covariates):**  
+  - Apartment characteristics: living area, number of rooms, construction year, last modernization  
+  - Amenities: balcony, elevator, fitted kitchen, parking
 
-- **Urban markets:**  
-  Single-municipality districts (*kreisfreie Städte*)
+- **Market classification:**
+  - Rental markets are classified as **urban** and **rural** based on administrative district structure  
+  - **Urban markets:** districts consisting of a single municipality (*kreisfreie Städte*)  
+  - **Rural markets:** multi-municipality districts (*Landkreise*)
 
-- **Rural markets:**  
-  Multi-municipality districts (*Landkreise*)
-  
-##Descriptive Statistics (Urban vs. Rural)
+# Identification Strategy
 
+## Conceptual Framework
+- Apartment rents are determined by housing characteristics, amenities, and local market conditions.
+- Energy efficiency is treated as a quality attribute of rental apartments that may be reflected in advertised rents.
+
+## Source of Variation
+- Apartments in the dataset differ in their energy efficiency class.
+- The analysis compares apartments with different energy efficiency levels across urban and rural rental markets.
+
+## Empirical Strategy
+- Control for observable apartment characteristics and amenities (e.g. size, rooms, parking).
+- Differentiate between urban and rural rental markets using market classification.
+- Estimate the conditional relationship between energy efficiency and advertised rent per square meter.
+- Examine whether this relationship differs between urban and rural rental markets.
+
+## Key Assumption
+- After conditioning on observable apartment characteristics and market type (urban vs. rural), remaining differences in rents are associated with differences in energy efficiency.
+
+## Limitations
+- The cross-sectional and observational nature of the data does not allow causal interpretation.
+- Unobserved apartment characteristics and local factors may still affect both energy efficiency and rental prices.
+
+# Methodology
+
+## Estimator and Model Specification
+- Model: Log-linear hedonic rent regression estimated by Ordinary Least Squares (OLS)
+$$
+\ln(\text{Rent}_i) = \alpha + \beta \, \text{EnergyClass}_i + \gamma \mathbf{X}_i + \varepsilon_i
+$$
+- Specifications:
+ - $\ln(\text{Rent}_i)$: Log rent per square meter.
+ - $\text{EnergyClass}_i$: Energy class dummies (A+ to H). **Ref: Class C.**
+ - $\mathbf{X}_i$: Structural controls (size, age, balcony, etc.).
+ - $\varepsilon_i$: Error term (**Clustered by District** to correct for local price correlation).
+- Urban-rural heterogeneity: Model estimated separately for urban and rural rental markets
+- Inference: Robust standard errors
+ 
+# Result
+
+## Descriptive Statistics I
 ```{r}
 #| echo: false
 #| warning: false
@@ -100,63 +134,17 @@ kbl(
   kable_styling(font_size = 7, latex_options = "hold_position")
 ```
 
-## Key Observations
-
-- **Rental prices:**  
-  Urban rents are higher on average (€10.0 vs. €9.5 per m²).
-
-- **Energy efficiency:**  
-  Rural markets exhibit a higher share of energy-efficient apartments (31.9% vs. 27.8%), likely reflecting newer building stock.
-
-
-# Methodology
-
-## Identification Strategy
-
-### Conceptual Framework
-- Apartment rents are determined by structural characteristics, amenities, and location.
-- Energy efficiency is treated as a **quality attribute** valued by tenants.
-
-### Key Assumption
-- Conditional on observable characteristics (size, age, amenities, and location), remaining rent differences are associated with energy efficiency.
-
-### Estimation
-- Ordinary Least Squares (OLS)
-- Robust standard errors clustered at the district level
-
-## Econometric Model
-
-We estimate the green premium using a hedonic rent regression:
-
-$$
-\ln(\text{Rent}_i) = \alpha + \beta \, \text{EnergyClass}_i + \gamma \mathbf{X}_i + \delta_d + \varepsilon_i
-$$
-## Model Components
-
-- $\ln(\text{Rent}_i)$: Log rent per square meter  
-- $\text{EnergyClass}_i$: Energy efficiency class dummies (A+ to H), reference category **C**  
-- $\mathbf{X}_i$: Apartment characteristics and amenities (age, balcony, elevator, etc.)  
-- $\delta_d$: District fixed effects (controlling for local price levels)
-
-# Results
-
-## Descriptive Evidence (Raw Data)
-
-Before controls, we see a clear correlation: Better energy classes are associated with higher rents.
-
+## Descriptive Statistics II
+ - Before controls, we see a clear correlation: More efficient energy classes are associated with higher rents.
 ![Rent Distribution by Energy Class](output/figures/png/fig01_boxplot_raw.png){width=85%}
 
-## The Green Premium (Regression Results)
-
+## Regression Results
 After controlling for confounders, the premium remains significant.
-
 * **A+ / A:** Significant premium (Tenants pay ~15-20% more).
 * **F / G / H:** Significant discount (Tenants pay less).
-
 ![Estimated Green Premium (Relative to Class C)](output/figures/png/fig02_green_premium.png){width=85%}
 
-## Heterogeneity: Urban vs. Rural
-
+## Market Results
 Does the market tightness matter?
 
 * **Urban (Red):** Steep gradient. High willingness to pay for efficiency.
@@ -164,36 +152,42 @@ Does the market tightness matter?
 
 ![Interaction Effect: Urban vs. Rural](output/figures/png/fig03_interaction_effect.png){width=85%}
 
-# Discussion & Conclusion
+# Discussion & Limitations 
+
+## Discussion
+- The results indicate that energy efficiency is reflected in advertised rental prices, even after controlling for observable apartment characteristics.
+- The stronger association in urban rental markets suggests that energy efficiency plays a more prominent role in rental price formation in cities than in rural areas. This pattern is consistent with the idea that tenants in urban markets face higher energy costs and stronger competition for housing, making energy efficiency more important in rental decisions.
+- Differences relative to findings for owner-occupied housing markets highlight that the capitalization of energy efficiency can vary across housing tenures and market contexts.
 
 ## Limitations
-- **Cross-Sectional Data:**  
-  - We observe a snapshot in time.  
-  - We cannot observe rent changes for the same apartment (no causal interpretation).  
+- The analysis relies on cross-sectional listing data and therefore identifies associations rather than causal effects. Unobserved apartment or neighborhood characteristics correlated with energy efficiency may partly explain the estimated rent differences.
+- Advertised rents may differ from final transaction rents.
+- Urban and rural markets are defined using administrative district structure, which may not fully capture differences in market tightness.
 
-- **Omitted Variable Bias:**  
-  - Unobserved quality (e.g., "luxury" status) might correlate with energy efficiency.  
+# Conclusion & Outlook
 
-- **Offer vs. Transaction:**  
-  - We analyze advertised rents, not final signed contracts.  
+## Conclusion
+- Energy efficiency is positively associated with advertised rent per square meter for rental apartments in Germany.
+- This association is substantially stronger in urban rental markets than in rural markets.
+- Energy efficiency therefore appears to play a more prominent role in rental price formation in cities.
 
-## Key Findings & Policy Implications
-- **The Green Premium is Real:**  
-  - Energy efficiency is capitalized into rental prices.  
+## Outlook
+- **Implications for Practice:**
+  - For landlords, investments in energy efficiency are more likely to be reflected in higher rents in urban markets than in rural areas.
+  - For policymakers, market-based incentives for energy-efficient renovations may be more effective in cities, while rural areas may require additional policy support.
+- **Implications for Research:**
+  - Future research could use panel data or policy changes to identify causal effects and better understand urban–rural differences.
 
-- **Market Heterogeneity:**  
-  - The effect is largely driven by Urban markets.  
+# References
+## References
+::: {.tiny}
+* Bundesministerium für Wirtschaft und Energie [BMWi]. (2014). *Immobilienanzeigen: Vermieter müssen ab Mai Energiedaten nennen*. [Link to Source](https://energiewende.bundeswirtschaftsministerium.de/EWD/Redaktion/Newsletter/2014/11/Meldung/immobilienanzeigen-vermieter-muessen-ab-mai-energiedaten-nennen.html)
 
-- **Policy Implications:**  
-  - **Urban:** Market forces naturally reward decarbonization.  
-  - **Rural:** The market signal is weak. Government subsidies are critical to incentivize renovations.  
+* Destatis. (2023, January 17). *Inflation rate at +7.9% in 2022* [Press release]. [Link to Source](https://www.destatis.de/EN/Press/2023/01/PE23_022_611.html)
 
-## Thank You!
-- Questions?
+* Taruttis, L., & Weber, C. (2022). Estimating the impact of energy efficiency on housing prices in Germany: Does regional disparity matter? *Energy Economics*, 105, 105750. [https://doi.org/10.1016/j.eneco.2021.105750](https://doi.org/10.1016/j.eneco.2021.105750)
 
-# Group 1: Ahmed Amasha & Begüm Akyüz
+* Wickham, H., & Grolemund, G. (2017). *R for data science: Import, tidy, transform, visualize, and model data*. O’Reilly Media. [https://r4ds.had.co.nz/](https://r4ds.had.co.nz/)
+:::
 
-
-**Group 1:**  
-Ahmed Amasha & Begüm Akyüz
-
+# Thank you! Questions?
